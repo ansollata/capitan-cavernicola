@@ -49,7 +49,15 @@ broadcast file itself is not in the repo; WL figures passed two independent suba
 BestRate's complexity implies. Two cards a year (Everyday + High Season) at MF/Sat/Sun grain
 reproduce almost everything the algorithm actually varies.
 
-### 1.3 What the current rates look like (deployed card, 715 stations / 135 mapped markets) [DB]
+### 1.3 What the current rates look like
+
+**Attribution note (corrected per Ana, 2026-07-13):** two versions of the card exist. The
+**original** BestRate card (the Updated Rates 6.1 export: 889 stations / 157 markets, :60/:30/:15
+only) lives on Ana's OneDrive and is profiled in the planner WORKLOG [WL]. The **planner's
+derived card** (the `rate_cards` table: 715 stations / 135 markets after name-mapping, medians
+per day-group, :10/:05 added by the planner's own 2026-04-17 rule) is a *transformation* of it
+[DB]. Statistics below are tagged by which card they describe; planner-only artifacts are not
+defects of BestRate's card and are flagged as such.
 
 | Median :30 rate (MF) | AMD | Midday | PMD | Evening | Overnight |
 |---|---|---|---|---|---|
@@ -58,19 +66,28 @@ reproduce almost everything the algorithm actually varies.
 - Sensible drive-time hierarchy and a sensible market-size gradient (top-10 markets median AMD
   :30 = $155 vs $22 in markets ranked 101+).
 - **But the levels are ragged where it matters:**
-  - **28% of all cells price the :30 at ≤ $5; 6.5% at ≤ $1** — placeholder-grade rates on more
-    than a quarter of the card.
-  - Within a single market, the p75/p25 spread of AMD :30 rates is **2.5×** (max 9.4×).
+  - **Placeholder-grade rates are endemic in both versions:** 28% of derived-card cells price
+    the :30 at ≤ $5 and 6.5% at ≤ $1 [DB]; the original card independently showed 1,118
+    $1-placeholder cells and a $2.90 median Overnight :30 [WL] — the disease is BestRate's,
+    not the transformation's.
+  - Within a single market, the p75/p25 spread of AMD :30 rates is **2.5×** on the derived card
+    (max 9.4×) [DB]; **1.6×** measured on the original card [WL] — dispersion is real in the
+    original and amplified by the planner's aggregation.
   - Joined to Nielsen audience (P25-54 AQH), the implied CPM spread within the *same daypart* is
     **7× between the 10th and 90th percentile station** — and 5–8× even within the same market-size
     tier. Same tier, same daypart: WIOQ Philadelphia sells a :30 at ~$7.8 CPM while WRKO Boston
     prices at ~$1,010 CPM. (Caveat: AM talk stations' P25-54 AQH understates their older
     audiences — the extreme tail is partly a demo artifact — but the broad dispersion is real.)
-- **The spot-length economics are internally contradictory.** Observed :30/:60 = 0.75 and
-  :15/:60 = 0.43 (vs the frozen 2010 differentials of 0.57/0.32 — they've drifted, unmanaged).
-  Meanwhile the :10 and :05 rates were bolted on by fixed rule (:10 = 0.75 × :30), with the
-  result that **the :10 spot is priced above the :15 spot on 76% of the card** [DB]. No one
-  decided that; two mechanisms disagreed.
+- **The spot-length economics have drifted unmanaged.** Observed :30/:60 = 0.75 and
+  :15/:60 = 0.43 on today's card (vs the frozen 2010 differentials of 0.57/0.32) [DB, source
+  rates observed not derived]. The original card is internally consistent on its three lengths
+  (only 4 monotonicity violations in 2.9M rows [WL]).
+- **CORRECTED ATTRIBUTION — the :10/:05 inversion is the planner's, not BestRate's.** The
+  original card carries no :10/:05 rates at all. The planner's import rule (:10 = 0.75 × :30,
+  business decision 2026-04-17) prices the :10 above the observed :15 on **76% of the derived
+  card** [DB]. Any :10/:05 rates quoted from the planner today are contradictory with the :15 —
+  a defect to fix in the planner *and* a policy gap (nobody has set official :10/:05 pricing)
+  that the new rate card must close.
 
 ### 1.4 TTWN and Premiere (the rest of "everything")
 
