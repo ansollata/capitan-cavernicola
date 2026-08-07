@@ -1,0 +1,5 @@
+# Runtime outputs
+market_files/
+logs/
+__pycache__/
+*.pyc
